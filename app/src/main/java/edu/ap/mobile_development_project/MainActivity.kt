@@ -6,6 +6,8 @@ import android.os.Bundle
 import android.widget.Button
 
 class MainActivity : AppCompatActivity() {
+    private lateinit var mapButton: Button
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -17,5 +19,12 @@ class MainActivity : AppCompatActivity() {
             val intent = Intent(this, DataActivity::class.java)
             startActivity(intent)
         }
+
+        mapButton = findViewById<Button>(R.id.map_button)
+        mapButton.setOnClickListener {
+            val intent = Intent(this, MapActivity::class.java)
+            startActivity(intent)
+        }
+
     }
 }
