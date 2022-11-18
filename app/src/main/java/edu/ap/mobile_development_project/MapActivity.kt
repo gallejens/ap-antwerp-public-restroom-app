@@ -91,6 +91,7 @@ class MapActivity : Activity() {
     private fun initMap() {
         mMapView?.setTileSource(TileSourceFactory.DEFAULT_TILE_SOURCE)
 
+
         mMapView?.controller?.setZoom(17.0)
         // default = Ellermanstraat 33
         setCenter(GeoPoint(51.23020595, 4.41655480828479), "Campus Ellermanstraat")
