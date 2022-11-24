@@ -2,42 +2,25 @@ package edu.ap.mobile_development_project
 
 import android.Manifest
 import android.app.Activity
-import android.app.Notification
-import android.app.NotificationChannel
-import android.app.NotificationManager
-import android.content.Context
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
-import android.util.Log
-import android.view.View
-import android.view.inputmethod.InputMethodManager
-import android.widget.Button
-import android.widget.EditText
-import android.widget.Toast
 import androidx.core.app.ActivityCompat
-import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat
-import com.beust.klaxon.JsonArray
-import com.beust.klaxon.JsonObject
-import com.beust.klaxon.Parser
-import okhttp3.OkHttpClient
-import okhttp3.Request
-import okhttp3.Response
+import com.google.android.material.bottomnavigation.BottomNavigationView
 import java.io.File
-import java.net.URL
-import java.net.URLEncoder
 import java.util.ArrayList
 import org.osmdroid.config.Configuration
-import org.osmdroid.events.MapEventsReceiver
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory
 import org.osmdroid.util.GeoPoint
 import org.osmdroid.views.MapView
 import org.osmdroid.views.overlay.ItemizedIconOverlay
 import org.osmdroid.views.overlay.ItemizedOverlay
-import org.osmdroid.views.overlay.MapEventsOverlay
 import org.osmdroid.views.overlay.OverlayItem
 
 class MapActivity : Activity() {
+    lateinit var bottomNav: BottomNavigationView
+
     private lateinit var mMapView: MapView
     private var mMyLocationOverlay: ItemizedOverlay<OverlayItem>? = null
     private var items = ArrayList<OverlayItem>()
@@ -56,7 +39,7 @@ class MapActivity : Activity() {
         val tileCache = File(osmConfig.osmdroidBasePath, "tile")
         osmConfig.osmdroidTileCache = tileCache
 
-        mMapView = findViewById(R.id.mapview)
+        mMapView = findViewById(R.id.map_view)
 
         // Permissions
         if (hasPermissions()) {
@@ -67,6 +50,22 @@ class MapActivity : Activity() {
                 Manifest.permission.WRITE_EXTERNAL_STORAGE,
                 Manifest.permission.ACCESS_FINE_LOCATION,
                 Manifest.permission.ACCESS_COARSE_LOCATION), 100)
+        }
+
+        bottomNav = findViewById(R.id.bottom_navigation)
+        bottomNav.selectedItemId = R.id.map
+        bottomNav.setOnItemSelectedListener { item ->
+            when (item.itemId) {
+                R.id.list -> {
+                    startActivity(Intent(this, MainActivity::class.java))
+                    overridePendingTransition(0, 0)
+                    true
+                }
+                R.id.map -> {
+                    true
+                }
+                else -> false
+            }
         }
     }
 
