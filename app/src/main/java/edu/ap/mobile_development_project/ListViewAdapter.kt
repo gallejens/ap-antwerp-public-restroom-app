@@ -23,7 +23,7 @@ class ListViewAdapter(private var toiletList: List<Toilet>) : RecyclerView.Adapt
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.temp.text = "Temp"
+        holder.temp.text = toiletList[position].address
     }
 
     override fun getItemCount(): Int {

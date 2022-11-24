@@ -5,6 +5,7 @@ import android.content.ContentValues
 import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
+import edu.ap.mobile_development_project.entities.Gender
 import edu.ap.mobile_development_project.entities.Toilet
 
 
@@ -23,16 +24,15 @@ const val COLUMN_LOCATION = "location"
 
 class DatabaseService(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME, null, 1) {
     override fun onCreate(p0: SQLiteDatabase?) {
-        TODO("Not yet implemented")
         p0?.execSQL("CREATE TABLE $TABLE_NAME (" +
                 "$COLUMN_ID INTEGER PRIMARY KEY AUTOINCREMENT, " +
-                "$COLUMN_DESCRIPTION VARCHAR(256), " +
-                "$COLUMN_OPENING_HOURS VARCHAR(256), " +
-                "$COLUMN_GENDER BOOLEAN, " +
-                "$COLUMN_ADDRESS VARCHAR(256), " +
-                "$COLUMN_WHEELCHAIR BOOLEAN, " +
-                "$COLUMN_BABY VARCHAR(256), " +
-                "$COLUMN_LOCATION VARCHAR(256) " +
+                "$COLUMN_DESCRIPTION VARCHAR(256) " +
+                "$COLUMN_OPENING_HOURS VARCHAR(256)," +
+                "$COLUMN_GENDER BOOLEAN," +
+                "$COLUMN_ADDRESS VARCHAR(256)," +
+                "$COLUMN_WHEELCHAIR BOOLEAN," +
+                "$COLUMN_BABY VARCHAR(256)," +
+                "$COLUMN_LOCATION VARCHAR(256)" +
                 ")" )
     }
 
@@ -40,11 +40,16 @@ class DatabaseService(context: Context) : SQLiteOpenHelper(context, DATABASE_NAM
         TODO("Not yet implemented")
     }
 
+    fun wipeData() {
+        val db = this.writableDatabase
+        db.execSQL("DELETE FROM $TABLE_NAME")
+    }
+
     fun insertData(toilet: Toilet) {
         val contentValues = ContentValues()
         contentValues.put(COLUMN_DESCRIPTION, toilet.description)
         contentValues.put(COLUMN_OPENING_HOURS, toilet.opening_hours)
-        contentValues.put(COLUMN_GENDER, toilet.gender)
+        contentValues.put(COLUMN_GENDER, toilet.gender?.value)
         contentValues.put(COLUMN_ADDRESS, toilet.address)
         contentValues.put(COLUMN_WHEELCHAIR, toilet.wheelchair)
         contentValues.put(COLUMN_BABY, toilet.baby)
@@ -63,19 +68,19 @@ class DatabaseService(context: Context) : SQLiteOpenHelper(context, DATABASE_NAM
         val result = this.readableDatabase.rawQuery("SELECT * FROM $TABLE_NAME", null)
         if (result.moveToFirst()) {
             do {
-                val toilet = Toilet()
-
-                toilet.id = result.getInt(result.getColumnIndex(COLUMN_ID))
-                toilet.description = result.getString(result.getColumnIndex(COLUMN_DESCRIPTION))
-                toilet.opening_hours = result.getString(result.getColumnIndex(COLUMN_OPENING_HOURS))
-                toilet.gender = result.getString(result.getColumnIndex(COLUMN_GENDER))
-                toilet.address = result.getString(result.getColumnIndex(COLUMN_ADDRESS))
-                toilet.wheelchair = result.getInt(result.getColumnIndex(COLUMN_WHEELCHAIR)) == 1
-                toilet.baby = result.getInt(result.getColumnIndex(COLUMN_BABY)) == 1
-
                 val splitLocation = result.getString(result.getColumnIndex(COLUMN_LOCATION)).split(";")
-                toilet.longitude = splitLocation[0].toDouble()
-                toilet.latitude = splitLocation[0].toDouble()
+
+                val toilet = Toilet(
+                    result.getInt(result.getColumnIndex(COLUMN_ID)),
+                    result.getString(result.getColumnIndex(COLUMN_DESCRIPTION)),
+                    result.getString(result.getColumnIndex(COLUMN_OPENING_HOURS)),
+                    Gender.fromInt(result.getInt(result.getColumnIndex(COLUMN_GENDER))),
+                    result.getString(result.getColumnIndex(COLUMN_ADDRESS)),
+                    result.getInt(result.getColumnIndex(COLUMN_WHEELCHAIR)) == 1,
+                    result.getInt(result.getColumnIndex(COLUMN_BABY)) == 1,
+                    splitLocation[0].toDouble(),
+                    splitLocation[1].toDouble()
+                )
 
                 toiletList.add(toilet)
             } while (result.moveToNext())
