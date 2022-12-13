@@ -20,8 +20,6 @@ class FilterService {
         val database = DatabaseService(context)
         mDatabase = database
 
-        // Remove!
-        database.wipeData()
 
         if (database.readData().isEmpty()) {
             DataMigrationService().getJsonData()

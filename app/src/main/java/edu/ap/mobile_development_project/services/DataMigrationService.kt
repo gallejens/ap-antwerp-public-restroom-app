@@ -1,25 +1,11 @@
 package edu.ap.mobile_development_project.services
 
 import android.os.StrictMode
-import android.util.Log
 import com.beust.klaxon.*
 import edu.ap.mobile_development_project.entities.Gender
 import edu.ap.mobile_development_project.entities.Toilet
 import okhttp3.*
 import java.io.StringReader
-
-class Properties(
-    val id: Int?,
-    val wheelchairAccessible: Boolean
-)
-
-class Geometry(
-    val coordinates: Array<Any>?
-)
-
-data class ToiletJSON(
-    val properties: JsonObject
-)
 
 class DataMigrationService {
 
