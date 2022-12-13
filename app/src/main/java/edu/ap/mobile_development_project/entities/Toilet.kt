@@ -21,6 +21,7 @@ class Toilet (
     val baby : Boolean?,
     val longitude : Double? ,
     val latitude : Double? ,
+    var distance : Float?,
 ) {
     override fun toString(): String {
         return "Toilet(id=$id, description=$description, opening_hours=$opening_hours"

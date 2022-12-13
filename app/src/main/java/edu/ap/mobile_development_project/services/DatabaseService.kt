@@ -26,7 +26,7 @@ class DatabaseService(context: Context) : SQLiteOpenHelper(context, DATABASE_NAM
     override fun onCreate(p0: SQLiteDatabase?) {
         p0?.execSQL("CREATE TABLE $TABLE_NAME (" +
                 "$COLUMN_ID INTEGER PRIMARY KEY AUTOINCREMENT, " +
-                "$COLUMN_DESCRIPTION VARCHAR(256) " +
+                "$COLUMN_DESCRIPTION VARCHAR(256), " +
                 "$COLUMN_OPENING_HOURS VARCHAR(256)," +
                 "$COLUMN_GENDER BOOLEAN," +
                 "$COLUMN_ADDRESS VARCHAR(256)," +
@@ -79,7 +79,8 @@ class DatabaseService(context: Context) : SQLiteOpenHelper(context, DATABASE_NAM
                     result.getInt(result.getColumnIndex(COLUMN_WHEELCHAIR)) == 1,
                     result.getInt(result.getColumnIndex(COLUMN_BABY)) == 1,
                     splitLocation[0].toDouble(),
-                    splitLocation[1].toDouble()
+                    splitLocation[1].toDouble(),
+                    0f,
                 )
 
                 toiletList.add(toilet)

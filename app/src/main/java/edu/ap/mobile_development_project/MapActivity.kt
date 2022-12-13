@@ -1,13 +1,11 @@
 package edu.ap.mobile_development_project
 
-import android.Manifest
 import android.app.Activity
 import android.content.Intent
-import android.content.pm.PackageManager
+import android.location.LocationManager
 import android.os.Bundle
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import edu.ap.mobile_development_project.services.FilterService
 import java.io.File
 import java.util.ArrayList
 import org.osmdroid.config.Configuration
@@ -17,14 +15,16 @@ import org.osmdroid.views.MapView
 import org.osmdroid.views.overlay.ItemizedIconOverlay
 import org.osmdroid.views.overlay.ItemizedOverlay
 import org.osmdroid.views.overlay.OverlayItem
+import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider
+import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay
 
 class MapActivity : Activity() {
-    lateinit var bottomNav: BottomNavigationView
+    private lateinit var bottomNav: BottomNavigationView
 
     private lateinit var mMapView: MapView
     private var mMyLocationOverlay: ItemizedOverlay<OverlayItem>? = null
     private var items = ArrayList<OverlayItem>()
-    private val urlNominatim = "https://nominatim.openstreetmap.org/"
+    private var currentLocationOverlay: MyLocationNewOverlay? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -40,18 +40,9 @@ class MapActivity : Activity() {
         osmConfig.osmdroidTileCache = tileCache
 
         mMapView = findViewById(R.id.map_view)
+        initMap()
 
-        // Permissions
-        if (hasPermissions()) {
-            initMap()
-        }
-        else {
-            ActivityCompat.requestPermissions(this, arrayOf(
-                Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                Manifest.permission.ACCESS_FINE_LOCATION,
-                Manifest.permission.ACCESS_COARSE_LOCATION), 100)
-        }
-
+        // Navbar things
         bottomNav = findViewById(R.id.bottom_navigation)
         bottomNav.selectedItemId = R.id.map
         bottomNav.setOnItemSelectedListener { item ->
@@ -69,51 +60,41 @@ class MapActivity : Activity() {
         }
     }
 
-    private fun hasPermissions(): Boolean {
-        return ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED &&
-                ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED &&
-                ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED
-    }
-
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        if (requestCode == 100) {
-            if (hasPermissions()) {
-                initMap()
-            } else {
-                println("finish")
-                finish()
-            }
-        }
-    }
-
     private fun initMap() {
-        mMapView?.setTileSource(TileSourceFactory.DEFAULT_TILE_SOURCE)
+        mMapView.setTileSource(TileSourceFactory.DEFAULT_TILE_SOURCE)
+        mMapView.controller?.setZoom(14.0)
 
+        val startPosition = GeoPoint(51.23020595, 4.41655480828479)
+        mMapView.controller?.setCenter(startPosition)
 
-        mMapView?.controller?.setZoom(17.0)
-        // default = Ellermanstraat 33
-        setCenter(GeoPoint(51.23020595, 4.41655480828479), "Campus Ellermanstraat")
+        val provider = GpsMyLocationProvider(this)
+        provider.addLocationSource(LocationManager.NETWORK_PROVIDER)
+        currentLocationOverlay = MyLocationNewOverlay(mMapView)
+        currentLocationOverlay?.enableFollowLocation()
+        mMapView.overlays?.add(currentLocationOverlay)
+
+        val toiletList = FilterService.instance.getAll()
+        for (t in toiletList) {
+            val geoPoint = GeoPoint(t.latitude!!, t.longitude!!)
+            addMarker(geoPoint, t.id!!.toBigDecimal().toPlainString())
+        }
     }
 
     private fun addMarker(geoPoint: GeoPoint, name: String) {
         items.add(OverlayItem(name, name, geoPoint))
         mMyLocationOverlay = ItemizedIconOverlay(items, null, applicationContext)
-        mMapView?.overlays?.add(mMyLocationOverlay)
-    }
-
-    private fun setCenter(geoPoint: GeoPoint, name: String) {
-        mMapView?.controller?.setCenter(geoPoint)
-        addMarker(geoPoint, name)
+        mMapView.overlays?.add(mMyLocationOverlay)
     }
 
     override fun onPause() {
         super.onPause()
-        mMapView?.onPause()
+        mMapView.onPause()
+        currentLocationOverlay?.disableMyLocation()
     }
 
     override fun onResume() {
         super.onResume()
-        mMapView?.onResume()
+        mMapView.onResume()
+        currentLocationOverlay?.enableMyLocation()
     }
 }

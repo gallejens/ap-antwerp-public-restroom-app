@@ -1,6 +1,7 @@
 package edu.ap.mobile_development_project.services
 
 import android.os.StrictMode
+import android.util.Log
 import com.beust.klaxon.*
 import edu.ap.mobile_development_project.entities.Gender
 import edu.ap.mobile_development_project.entities.Toilet
@@ -16,14 +17,9 @@ class Geometry(
     val coordinates: Array<Any>?
 )
 
-
 data class ToiletJSON(
     val properties: JsonObject
 )
-
-
-
-
 
 class DataMigrationService {
 
@@ -66,21 +62,36 @@ class DataMigrationService {
                     else -> Gender.UNKNOWN
                 }
 
-                val street = innerProperties?.string("STRAAT")
-                val houseNumber = innerProperties?.string("HUISNUMMER")
-                val zipCode = innerProperties?.int("POSTCODE")
-                val district = innerProperties?.string("DISTRICT")
+                var street = innerProperties?.string("STRAAT")
+                if (street == null) {
+                    street = "Unknown"
+                }
+                var houseNumber = innerProperties?.string("HUISNUMMER")
+                if (houseNumber == null) {
+                    houseNumber = ""
+                }
+                var zipCode = innerProperties?.int("POSTCODE")
+                if (zipCode == null) {
+                    zipCode = 2000
+                }
+                var district = innerProperties?.string("DISTRICT")
+                if (district == null) {
+                    district = "Antwerpen"
+                }
+
+                val address = "$street $houseNumber, $zipCode $district"
 
                 return Toilet(
                     innerProperties?.int("ID"),
                     innerProperties?.string("OMSCHRIJVING"),
                     innerProperties?.string("OPENINGSUREN_OPM"),
                     gender,
-                    "$street $houseNumber, $zipCode $district",
-                    innerProperties?.string("DOELGROEP") == "ja",
+                    address,
+                    innerProperties?.string("INTEGRAAL_TOEGANKELIJK") == "ja",
                     innerProperties?.string("LUIERTAFEL") == "ja",
                     innerGeometry?.array<Double>("coordinates")?.get(0),
-                    innerGeometry?.array<Double>("coordinates")?.get(1)
+                    innerGeometry?.array<Double>("coordinates")?.get(1),
+                    0f
                 )
             }
 
@@ -91,17 +102,9 @@ class DataMigrationService {
         val toiletArray = parsedString.array<JsonObject>("features") ;
 
         toiletArray?.forEach {
-
             toiletList.add(klaxonInstance.converter(propertiesConverter).parseFromJsonObject<Toilet>(it)!!)
-
         }
-
-
-        //println(toilets)
-
-
 
         return toiletList
     }
-
 }

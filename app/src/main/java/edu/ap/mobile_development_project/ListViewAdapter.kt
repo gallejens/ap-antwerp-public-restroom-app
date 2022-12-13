@@ -10,10 +10,10 @@ import edu.ap.mobile_development_project.entities.Toilet
 class ListViewAdapter(private var toiletList: List<Toilet>) : RecyclerView.Adapter<ListViewAdapter.ViewHolder>() {
 
     inner class ViewHolder (itemView : View) : RecyclerView.ViewHolder(itemView) {
-        var temp : TextView
+        var title : TextView
 
         init {
-            temp = itemView.findViewById(R.id.temp)
+            title = itemView.findViewById(R.id.title)
         }
     }
 
@@ -23,11 +23,11 @@ class ListViewAdapter(private var toiletList: List<Toilet>) : RecyclerView.Adapt
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.temp.text = toiletList[position].address
+        val t = toiletList[position]
+        holder.title.text = t.address + " - ${t.distance}km"
     }
 
     override fun getItemCount(): Int {
-        return toiletList.size;
+        return toiletList.size
     }
-
 }
