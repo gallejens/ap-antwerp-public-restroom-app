@@ -28,6 +28,7 @@
         android:id="@+id/filterLayout"
         android:layout_width="0dp"
         android:layout_height="80dp"
+        android:backgroundTint="#C3C3C3"
         android:baselineAligned="false"
         android:orientation="horizontal"
         app:layout_constraintBottom_toTopOf="@+id/bottom_navigation"
@@ -39,28 +40,40 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_weight="1"
+            android:backgroundTint="#B5B5B5"
             android:orientation="vertical">
 
             <TextView
                 android:id="@+id/textView"
                 android:layout_width="match_parent"
                 android:layout_height="20dp"
+                android:background="#B5B5B5"
                 android:clickable="false"
                 android:text="Gender"
-                android:textAlignment="center" />
+                android:textAlignment="center"
+                android:textColor="@color/black"
+                android:textSize="15sp" />
 
             <CheckBox
                 android:id="@+id/maleFilter"
                 android:layout_width="match_parent"
                 android:layout_height="30dp"
+                android:background="#B5B5B5"
+                android:buttonTint="#225C6E"
                 android:text="Man"
+                android:textColorHighlight="#225C6E"
+                android:textColorLink="#225C6E"
                 tools:ignore="TouchTargetSizeCheck" />
 
             <CheckBox
                 android:id="@+id/femaleFilter"
                 android:layout_width="match_parent"
                 android:layout_height="30dp"
+                android:background="#B5B5B5"
+                android:buttonTint="#225C6E"
                 android:text="Vrouw"
+                android:textColorHighlight="#225C6E"
+                android:textColorLink="#225C6E"
                 tools:ignore="TouchTargetSizeCheck" />
         </LinearLayout>
 
@@ -74,21 +87,32 @@
                 android:id="@+id/textView2"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:background="#B5B5B5"
                 android:text="Extra"
-                android:textAlignment="center" />
+                android:textAlignment="center"
+                android:textColor="@color/black"
+                android:textSize="15sp" />
 
             <CheckBox
                 android:id="@+id/wheelchairFilter"
                 android:layout_width="match_parent"
                 android:layout_height="30dp"
+                android:background="#B5B5B5"
+                android:buttonTint="#225C6E"
                 android:text="Rolstoeltoegankelijk"
+                android:textColorHighlight="#225C6E"
+                android:textColorLink="#225C6E"
                 tools:ignore="TouchTargetSizeCheck" />
 
             <CheckBox
                 android:id="@+id/babyFilter"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:background="#B5B5B5"
+                android:buttonTint="#225C6E"
                 android:text="Luiertafel"
+                android:textColorHighlight="#225C6E"
+                android:textColorLink="#225C6E"
                 tools:ignore="TouchTargetSizeCheck" />
         </LinearLayout>
 
@@ -99,6 +123,8 @@
         android:layout_width="match_parent"
         android:layout_height="50dp"
         android:layout_alignParentBottom="true"
+        app:backgroundTint="#225C6E"
+        app:itemTextColor="@color/white"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
