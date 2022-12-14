@@ -138,7 +138,13 @@ class MainActivity : AppCompatActivity() {
 
     private fun updateToilets() {
         toiletList = FilterService.instance.getAll()
-        val adapter = ListViewAdapter(toiletList)
+        val adapter = ListViewAdapter(toiletList, fun(index: Int) {
+            val i = Intent(this, MapActivity::class.java)
+            i.putExtra("longitude", toiletList[index].longitude?.toBigDecimal().toString() ?: "0.0")
+            i.putExtra("latitude", toiletList[index].latitude?.toBigDecimal().toString() ?: "0.0")
+            startActivity(i)
+            overridePendingTransition(0, 0)
+        })
         listRecyclerView.adapter = adapter
     }
 }

@@ -6,8 +6,6 @@ import android.location.LocationManager
 import android.os.Bundle
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import edu.ap.mobile_development_project.services.FilterService
-import java.io.File
-import java.util.ArrayList
 import org.osmdroid.config.Configuration
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory
 import org.osmdroid.util.GeoPoint
@@ -17,6 +15,7 @@ import org.osmdroid.views.overlay.ItemizedOverlay
 import org.osmdroid.views.overlay.OverlayItem
 import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider
 import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay
+import java.io.File
 
 class MapActivity : Activity() {
     private lateinit var bottomNav: BottomNavigationView
@@ -26,9 +25,18 @@ class MapActivity : Activity() {
     private var items = ArrayList<OverlayItem>()
     private var currentLocationOverlay: MyLocationNewOverlay? = null
 
+    private var startLatitude: Double? = null
+    private var startLongitude: Double? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_map)
+
+        val extras = intent.extras
+        if (extras != null) {
+            startLatitude = extras.getString("latitude")?.toDouble()
+            startLongitude = extras.getString("longitude")?.toDouble()
+        }
 
         // Problem with SQLite db, solution :
         // https://stackoverflow.com/questions/40100080/osmdroid-maps-not-loading-on-my-device
@@ -62,15 +70,9 @@ class MapActivity : Activity() {
 
     private fun initMap() {
         mMapView.setTileSource(TileSourceFactory.DEFAULT_TILE_SOURCE)
-        mMapView.controller?.setZoom(14.0)
-
-        val startPosition = GeoPoint(51.23020595, 4.41655480828479)
-        mMapView.controller?.setCenter(startPosition)
-
         val provider = GpsMyLocationProvider(this)
         provider.addLocationSource(LocationManager.NETWORK_PROVIDER)
         currentLocationOverlay = MyLocationNewOverlay(mMapView)
-        currentLocationOverlay?.enableFollowLocation()
         mMapView.overlays?.add(currentLocationOverlay)
 
         val toiletList = FilterService.instance.getAll()
@@ -78,6 +80,11 @@ class MapActivity : Activity() {
             val geoPoint = GeoPoint(t.latitude!!, t.longitude!!)
             addMarker(geoPoint, t.id!!.toBigDecimal().toPlainString())
         }
+
+        val startPosition = GeoPoint(startLatitude ?: 51.23020595, startLongitude ?: 4.41655480828479)
+        mMapView.controller?.setCenter(startPosition)
+        val zoom = if (startLatitude == null) 14 else 16
+        mMapView.controller?.setZoom(zoom)
     }
 
     private fun addMarker(geoPoint: GeoPoint, name: String) {
